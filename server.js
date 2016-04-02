@@ -11,7 +11,6 @@ let express = require('express'),
 mongoose.connect(dbURI);
 
 // Models
-let Location = require('./app/api/models/location');
 let Herb = require('./app/api/models/herb');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,33 +35,76 @@ apiRouter.get('/', (req, res) => {
 	res.json({ message: 'Hello API!' });
 });
 
-apiRouter.route('/locations')
+apiRouter.route('/herbs')
 	.post((req, res) => {
-		let location = new Location();
+		let herb = new Herb();
 
-		location.county = req.body.county;
-		location.district = req.body.district;
-		location.geo = req.body.geo;
+		herb.name = req.body.name;
+		herb.use = req.body.use;
+		herb.aspect	= req.body.aspect;
+		herb.image = req.body.image;
+		herb.extGrade = req.body.extGrade; 
+		herb.county = req.body.county;
+		herb.district = req.body.district;
+		herb.geo = req.body.geo;
 
-		location.save(err => {
+		herb.save(err => {
 			if (err) res.send(err);
-			res.json({ message: 'Location added!' });
+			res.json({ message: 'Herb added!' });
 		});
 	})
 
 	.get((req, res) => {
-		Location.find((err, locations) => {
+		Herb.find((err, herbs) => {
 			if (err) res.send(err);
-			res.json(locations);
+			res.json(herbs);
 		});
 	});
 
-apiRouter.route('location/:location_name')
-	.get((req, res) => {
-		Location.findById(req.params.location_name, (err, location) => {
+apiRouter.route('/herb/:id_herb')
+	
+	.put((req, res) => {
+		Herb.findById(req.params.id_herb, (err, herb) => {
+			console.log(req.body.use);
 			if (err) res.send(err);
-			res.json(location);
+			// update info
+			herb.name = req.body.name;
+			herb.use = req.body.use;
+			herb.aspect	= req.body.aspect;
+			herb.image = req.body.image;
+			herb.extGrade = req.body.extGrade; 
+			herb.county = req.body.county;
+			herb.district = req.body.district;
+			herb.geo = req.body.geo;
+			// save beer
+			herb.save(err => {
+				if (err) res.send(err);
+				res.json({ message: 'Herb updated!' });
+			});
 		});
+	})
+
+	.delete((req, res) => {
+		Herb.remove({ _id: req.params.id_herb}, (err, herb) => {
+			if (err) res.send(err);
+			res.json({ message: 'Successfully deleted!'});
+		});
+	});
+
+apiRouter.route('/herb/county/:county')
+	.get((req, res) => {
+		Herb.find({ county: req.params.county}, (err, herb) => {
+			if (err) res.send(err);
+			res.json(herb);
+		})
+	});
+
+apiRouter.route('/herb/district/:district')
+	.get((req, res) => {
+		Herb.find({ district: req.params.district}, (err, herb) => {
+			if (err) res.send(err);
+			res.json(herb);
+		})
 	});
 
 // register our routes

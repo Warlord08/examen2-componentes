@@ -8,7 +8,10 @@ let	HerbSchema = new Schema({
 	use: String,
 	aspect	: String,
 	image : String,
-	extGrade : String
+	extGrade : Number,
+	county: String,
+	district: String,
+	geo: String
 });
 
 module.exports = mongoose.model('Herb', HerbSchema);
